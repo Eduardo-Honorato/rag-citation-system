@@ -1,4 +1,4 @@
-# RAG System with Citation - Instruções de Execução
+# Sistema RAG com Citação - Instruções de Execução
 
 ## Estrutura do Projeto
 ```

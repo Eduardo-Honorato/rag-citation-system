@@ -1,151 +1,186 @@
-# RAG System with Citations
+# Sistema RAG com Citações
 
-A Streamlit-based Retrieval-Augmented Generation (RAG) system that enables semantic document search with source citations. The system allows users to upload documents, index them using FAISS vector search, and query them to get answers with proper source references.
+## Apresentação
 
-## 📋 Project Overview
+Este projeto implementa um sistema completo de Retrieval-Augmented Generation (RAG - Geração Aumentada por Recuperação) utilizando Streamlit como interface web. O sistema permite o upload e processamento de documentos, indexação semântica utilizando FAISS e geração de respostas com citações das fontes origem.
 
-This project implements a complete RAG (Retrieval-Augmented Generation) pipeline:
+O sistema foi desenvolvido para proporcionar buscas semânticas em documentos pessoais ou corporativos, retornando respostas fundamentadas com referências diretas aos trechos relevantes encontrados nos documentos originais.
 
-1. **Document Ingestion** - Upload and process PDF, TXT, and MD files
-2. **Text Chunking** - Split documents into manageable chunks with configurable overlap
-3. **Embedding Generation** - Create vector embeddings using Sentence-Transformers
-4. **Vector Indexing** - Build FAISS index for fast similarity search
-5. **Semantic Search** - Find relevant document chunks based on query semantics
-6. **Response Generation** - Generate answers with proper source citations
+## Arquitetura do Sistema
 
-## ✨ Features
+O sistema consiste em três componentes principais:
 
-- **📁 Document Support**: PDF, TXT, and MD file formats
-- **🔍 Semantic Search**: Vector-based similarity search using FAISS
-- **📄 Source Citations**: Each answer includes source document references
-- **🎨 Modern UI**: Dark mode interface with animated visual elements
-- **⚡ Fast Indexing**: Optimized document processing pipeline
-- **🔒 Local-First**: All processing happens locally - no API keys required
+1. **Módulo de Ingestão (ingest.py)**
+   - Leitura de documentos nos formatos PDF, TXT e MD
+   - Extração de texto usando pdfminer.six e leitura padrão
+   - Divisão do texto em chunks com tamanho e sobreposição configuráveis
+   - Geração de embeddings utilizando modelo Sentence-Transformers (all-MiniLM-L6-v2 por padrão)
+   - Salvamento de embeddings e metadados em formato numpy e JSON
 
-## 🚀 Quick Start
+2. **Módulo de Indexação e Busca (search.py)**
+   - Criação de índice FAISS (IndexFlatIP) para busca de similaridade por produto interno
+   - Geração de embedding para queries do usuário
+   - Busca de top-k chunks mais similares usando index.search()
+   - Retorno de resultados com scores de similaridade e índices dos chunks
 
-### Prerequisites
+3. **Módulo de Geração de Resposta (generate.py)**
+   - Construção de prompt utilizando os chunks recuperados como contexto
+   - Geração de resposta fundamentada apenas nos documentos fornecidos
+   - Criação de estrutura de citações com identificadores, fontes e números de chunk
+   - Resposta simulada para demonstração ou integração com LLM real em produção
 
-- Python 3.8 or higher
-- Git (optional, for version control)
+## fluxo de trabalho
 
-### 1. Clone or Download
+1. **Upload e Processamento**
+   - Uploader documentos → Ingestão (botão "Indexar Documentos")
+   - O sistema lê os documentos da pasta especificada
+   - Textos são extraídos e divididos em chunks gerenciáveis
+   - Embeddings são gerados para cada chunk
+   - Índice FAISS é construído e salvo
 
-```bash
-git clone https://github.com/Eduardo-Honorato/rag-citation-system.git
-cd rag-citation-system
-```
+2. **Busca Semântica**
+   - Usuário digita uma pergunta no campo de busca
+   - Embedding da query é gerado utilizando o mesmo modelo
+   - Índice FAISS é pesquisado para encontrar os k chunks mais similares
+   - Resultados são exibidos com scores de similaridade
 
-### 2. Create Virtual Environment
+3. **Geração de Resposta**
+   - Usuário clica em "Gerar Resposta com Citação"
+   - Response é gerada baseada nos chunks recuperados
+   - Fontes são listadas com identificadores, nomes dos arquivos e números de chunk
 
-```bash
-# Using venv (recommended)
-python -m venv .venv
+## Instalação
 
-# Activate virtual environment
-# On Windows:
-.venv\Scripts\activate
-# On macOS/Linux:
-source .venv/bin/activate
-```
+### Pré-requisitos
 
-### 3. Install Dependencies
+- Python 3.8 ou superior
+- Pip (gerenciador de pacotes Python)
 
-```bash
-pip install -r requirements.txt
-```
+### Passo a passo
 
-### 4. Run the Application
+1. **Clonar o repositório** (ou baixar os arquivos do projeto)
 
-```bash
-streamlit run app/app.py
-```
+2. **Criar ambiente virtual** (recomendado)
 
-The app will be available at `http://localhost:8501`
+   ```bash
+   python -m venv .venv
+   ```
 
-## 📦 Project Structure
+3. **Ativar o ambiente virtual**
+
+   - No Windows:
+     ```
+     .venv\Scripts\activate
+     ```
+
+   - No macOS/Linux:
+     ```
+     source .venv/bin/activate
+     ```
+
+4. **Instalar dependências**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   As dependências principais incluem:
+   - **streamlit**: Framework para interfaces web interativas em Python
+   - **faiss-cpu**: Facebook AI Similarity Search para indexação e busca vetorial
+   - **sentence-transformers**: Modelos de embeddings para transformação de texto em vetores
+   - **pdfminer.six**: Extração de texto de arquivos PDF
+   - **numpy**: Operações numéricas para processamento de embeddings
+
+5. **Executar o aplicativo**
+
+   ```bash
+   streamlit run app/app.py
+   ```
+
+   O aplicativo será disponibilizado em: http://localhost:8501
+
+## Utilização
+
+### Interface
+
+Ao iniciar o aplicativo, será apresentada uma barra lateral à esquerda com as seguintes funcionalidades:
+
+- **Área de logo 3D animada** no topo da sidebar
+- **Pastas de documentos**: Campo de texto para especificar o diretório contendo os documentos a serem indexados (padrão: "docs")
+- **Configurações de indexação**:
+  - Tamanho do chunk: Define o tamanho dos fragmentos de texto (padrão: 500, faixa: 100-1000)
+  - Sobreposição do chunk: Define a sobreposência entre chunks consecutivos (padrão: 50, faixa: 0-200)
+- **Botão "Indexar Documentos"**: Processa todos os documentos da pasta especificada
+- **Chips de status**: Indicam se o índice foi construído e quantos documentos foram processados
+
+### Área Principal
+
+Após o índice ser construído, a área principal exibirá:
+
+- **Status ativo**: Indica que o sistema está pronto para buscas
+- **Campo de busca**: Digite sua pergunta para buscar nos documentos indexados
+- **Seletor de resultados**: Número de resultados a retornar (1-10, padrão: 4)
+- **Botão "Buscar"**: Executa a busca semântica
+- **Expansores de resultados**: Cada resultado mostra o arquivo, score de similaridade e preview do conteúdo
+- **Citações**: Informações sobre os trechos selecionados com numeração
+- **Botão "Gerar Resposta com Citação"**: Gera uma resposta fundamentada nos documentos encontrados
+
+### Passos para uso típico
+
+1. Coloque seus documentos (PDF, TXT, MD) na pasta especificada ou informe o caminho
+2. Clique em "Indexar Documentos" na barra lateral
+3. Aguarde o processamento - o sistema extrairá texto, gerará embeddings e construirá o índice FAISS
+4. Digite sua pergunta no campo de busca
+5. Ajuste o número de resultados desejados
+6. Clique em "Buscar" para encontrar chunks relevantes
+7. Clique em "Gerar Resposta com Citação" para obter uma resposta com fontes citadas
+
+## Estrutura de Arquivos
 
 ```
 rag-citation-system/
 ├── app/
-│   ├── app.py              # Main Streamlit application
-│   ├── ingest.py          # Document ingestion and embedding
-│   ├── search.py          # FAISS search functionality
-│   └── generate.py        # Response generation with citations
-├── data/                   # Generated index files (added to .gitignore)
-├── docs/                   # Source documents directory
-├── .gitignore             # Git ignore rules
-├── requirements.txt       # Python dependencies
-└── README.md              # Project documentation
+│   ├── app.py              # Interface principal Streamlit
+│   ├── ingest.py          # Módulo de ingestão e processamento de documentos
+│   ├── search.py          # Módulo de busca semântica com FAISS
+│   └── generate.py        # Módulo de geração de resposta com citações
+├── data/                  # Pasta para índices gerados (faiss_index.bin, embeddings.npy, metadata.json)
+├── docs/                  # Pasta para documentos de origem (PDFs, TXTs, MDs)
+├── .gitignore            # Arquivo para ignorar arquivos de cache e ambientes virtuais
+├── requirements.txt       # Dependências Python
+└── README.md              # Documentação do projeto
 ```
 
-## 🛠️ Requirements
+## Requisitos
 
-See `requirements.txt` for the full list of dependencies, but the key packages include:
+Consulte o arquivo `requirements.txt` para a lista completa de dependências. Os pacotes essenciais são:
 
-- **streamlit**: Web interface framework
-- **faiss-cpu**: Facebook AI Similarity Search for vector indexing
-- **sentence-transformers**: Sentence embedding model (all-MiniLM-L6-v2 by default)
-- **pdfminer.six**: PDF text extraction
-- **numpy**: Numerical operations
-- **json**: Metadata handling
+- streamlit >= 1.28.0
+- faiss-cpu >= 1.7.0
+- sentence-transformers >= 2.2.0
+- pdfminer.six >= 20231117
+- numpy >= 1.24.0
 
-## 📚 How It Works
+## Contribuição
 
-### Ingestion Flow
+Contribuições são bem-vindas! Para contribuir:
 
-1. User uploads documents (PDF, TXT, MD) via the sidebar
-2. System extracts text from each document
-3. Text is split into chunks with configurable size and overlap
-4. Sentence-transformers model generates embeddings for each chunk
-5. FAISS index is built for fast similarity search
-6. Index and metadata are saved to `./data/` directory
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas alterações (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-### Search Flow
+## Licença
 
-1. User enters a query in the search box
-2. Query embedding is generated using the same model
-3. FAISS index searches for top-k similar chunks
-4. Retrieved chunks are used as context for response generation
-5. Response is generated with proper source citations
+Este projeto está licenciado sob a licença MIT - consulte o arquivo LICENSE para obter mais detalhes.
 
-### Response Generation
+## Contato
 
-1. Retrieved chunks provide contextual information
-2. LLM (or simulated response) generates answer based on context
-3. Source citations are formatted and displayed
-4. Answer includes references to original document chunks
+**Desenvolvedor**: Eduardo Honorato
 
-## 🔧 Configuration
-
-### Adjustable Parameters (via Sidebar)
-
-- **Tamanho do chunk**: Size of text chunks (default: 500)
-- **Sobreposição do chunk**: Overlap between consecutive chunks (default: 50)
-- **Número de resultados**: How many search results to return (default: 4)
-
-### Default Model
-
-The system uses `all-MiniLM-L6-v2` from Sentence-Transformers, which provides good quality embeddings with fast inference. This model converts text to 384-dimensional vectors.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 📧 Contact
-
-**Eduardo Honorato** - [GitHub Profile](https://github.com/Eduardo-Honorato)
-
-Project Link: [https://github.com/Eduardo-Honorato/rag-citation-system](https://github.com/Eduardo-Honorato/rag-citation-system)
+Para mais informações, acesse o repositório oficial ou abra uma issue no GitHub.
 
 ---
 
-**Generated with** [Claude Code](https://claude.com/claude-code)
+Sistema RAG com Citação - Interface Streamlit para busca semântica com fontes

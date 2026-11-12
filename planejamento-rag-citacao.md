@@ -1,7 +1,7 @@
 # Planejamento do Sistema RAG com Citação
 
 ## Visão Geral
-Sistema Retrieval-Augmented Generation (RAG) que permite:
+Sistema Retrieval-Augmented Generation (RAG - Geração Aumentada por Recuperação) que permite:
 - Ingestão de documentos de várias fontes
 - Indexação semântica usando embeddings
 - Busca similaridade para recuperação de contexto
