@@ -1,0 +1,6 @@
+streamlit==1.38.0
+sentence-transformers==3.1.0
+faiss-cpu==1.7.4
+pyarrow==16.0.0
+pdfminer.six==20240328
+python-dotenv==1.0.1

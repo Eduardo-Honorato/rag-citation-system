@@ -1,0 +1,60 @@
+# Python
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extension building
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv
+venv
+env
+ENV
+
+# IDE / Editor specific
+.vscode/
+.idea/
+*.swp
+*.srm
+*~
+
+# Streamlit / Streamlit specific
+.streamlit/
+
+# Data and index files (local only - not for production deployment)
+*.faiss
+*.index
+*.json
+*.npy
+*.bin
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+temp/
+tmp/

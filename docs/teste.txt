@@ -1,0 +1,1 @@
+Este é um documento de teste sobre inteligência artificial e machine learning. O sistema RAG permite a busca semântica em documentos. A embeddings são vetores que representam o significado do texto.
